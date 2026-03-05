@@ -12,6 +12,7 @@ from utils.logger import setup_logger
 from models.predictor import Predictor
 from alert.alert_manager import AlertManager
 from alert.recommendation_engine import RecommendationEngine
+from ai_engine.rca_llm import RCALLM
 
 # Initialize Flask app
 app = Flask(__name__, 
@@ -26,6 +27,7 @@ logger = setup_logger(__name__, "app.log")
 predictor = None
 alert_manager = AlertManager()
 recommendation_engine = RecommendationEngine()
+rca_engine = RCALLM()
 
 
 def init_predictor():
@@ -339,7 +341,21 @@ def get_stats():
         logger.error(f"Error getting stats: {e}")
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/root-cause', methods=['POST'])
+def root_cause_analysis():
 
+    try:
+        data = request.get_json()
+        log_text = data.get("log", "")
+
+        result = rca_engine.analyze_failure(log_text)
+
+        return jsonify(result)
+
+    except Exception as e:
+        logger.error(f"Root cause analysis error: {e}")
+        return jsonify({'error': str(e)}), 500
+               
 @app.errorhandler(404)
 def not_found(error):
     """Handle 404 errors."""
