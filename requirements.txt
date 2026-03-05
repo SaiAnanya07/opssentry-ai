@@ -37,6 +37,7 @@ pytest-flask>=1.2.0
 jupyter>=1.0.0
 notebook>=6.5.0
 
+shap
 # Optional: Advanced ML
 # tensorflow>=2.13.0  # Uncomment if using neural networks
 # torch>=2.0.0  # Uncomment if using PyTorch
