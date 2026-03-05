@@ -26,6 +26,7 @@ logger = setup_logger(__name__, "app.log")
 
 # Initialize components
 predictor = None
+shap_explainer = None
 alert_manager = AlertManager()
 recommendation_engine = RecommendationEngine()
 rca_engine = RCALLM()
