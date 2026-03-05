@@ -33,16 +33,20 @@ rca_engine = RCALLM()
 
 
 def init_predictor():
-    """Initialize predictor (lazy loading)."""
-           shap_explainer = SHAPExplainer(predictor.model)
-    global predictor
+    global predictor, shap_explainer
+
     if predictor is None:
         try:
             predictor = Predictor()
+            shap_explainer = SHAPExplainer(predictor.model)
+
             logger.info("✓ Predictor initialized")
+            logger.info("✓ SHAP Explainer initialized")
+
         except FileNotFoundError as e:
             logger.error(f"Failed to initialize predictor: {e}")
             predictor = None
+
     return predictor
 
 
