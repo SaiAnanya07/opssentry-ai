@@ -13,6 +13,7 @@ from models.predictor import Predictor
 from alert.alert_manager import AlertManager
 from alert.recommendation_engine import RecommendationEngine
 from ai_engine.rca_llm import RCALLM
+from ai_engine.shap_explainable import SHAPExplainer
 
 # Initialize Flask app
 app = Flask(__name__, 
@@ -32,6 +33,7 @@ rca_engine = RCALLM()
 
 def init_predictor():
     """Initialize predictor (lazy loading)."""
+           shap_explainer = SHAPExplainer(predictor.model)
     global predictor
     if predictor is None:
         try:
@@ -355,7 +357,22 @@ def root_cause_analysis():
     except Exception as e:
         logger.error(f"Root cause analysis error: {e}")
         return jsonify({'error': str(e)}), 500
-               
+@app.route('/api/explain', methods=['POST'])
+def explain_prediction():
+
+    try:
+        data = request.get_json()
+
+        explanation = shap_explainer.explain_prediction(data)
+
+        return jsonify({
+            "feature_importance": explanation
+        })
+
+    except Exception as e:
+        logger.error(f"SHAP explanation error: {e}")
+        return jsonify({"error": str(e)}), 500
+
 @app.errorhandler(404)
 def not_found(error):
     """Handle 404 errors."""
